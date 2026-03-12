@@ -20,8 +20,8 @@ for src in examples/*.c; do
     out="build/opt_${name}.ll"
 
     echo "--- $name ---"
-    $CLANG -O0 -Xclang -disable-O0-optnone -S -emit-llvm "$src" -o "$ir"
-    $OPT -load-pass-plugin "$SO" -passes="mem2reg,amd-opt" -S "$ir" -o "$out" 2>&1
+    $CLANG -O0 -S -emit-llvm "$src" -o "$ir"
+    $OPT -load-pass-plugin "$SO" -passes=amd-opt -S "$ir" -o "$out" 2>&1
     echo "  BEFORE: $(grep 'ret i32' $ir)"
     echo "  AFTER:  $(grep 'ret i32' $out)"
     echo ""

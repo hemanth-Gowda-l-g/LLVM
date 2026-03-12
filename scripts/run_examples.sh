@@ -35,8 +35,8 @@ for src in "$EXAMPLES_DIR"/*.c; do
   ir_out="$BUILD_DIR/opt_${name}.ll"
 
   echo "  - $name"
-  clang -O0 -Xclang -disable-O0-optnone -S -emit-llvm "$src" -o "$ir_in"
-  opt -load-pass-plugin "$PLUGIN_SO" -passes="mem2reg,amd-opt" -S "$ir_in" -o "$ir_out"
+  clang -O0 -S -emit-llvm "$src" -o "$ir_in"
+  opt -load-pass-plugin "$PLUGIN_SO" -passes=amd-opt -S "$ir_in" -o "$ir_out"
 done
 
 echo "[4/4] Done. Generated optimized IR files:"
