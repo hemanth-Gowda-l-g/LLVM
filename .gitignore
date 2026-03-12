@@ -1,0 +1,8 @@
+# Build artifacts
+build/
+
+# LLVM IR outputs
+*.ll
+
+# Shared objects
+*.so
