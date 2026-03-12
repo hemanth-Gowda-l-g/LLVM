@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_DIR="$ROOT_DIR/build"
 EXAMPLES_DIR="$ROOT_DIR/examples"
-PLUGIN_SO="$BUILD_DIR/libAMDOptimizer.so"
+PLUGIN_SO="$BUILD_DIR/libLLVMOptimizer.so"
 
 require_cmd() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -36,7 +36,7 @@ for src in "$EXAMPLES_DIR"/*.c; do
 
   echo "  - $name"
   clang -O0 -S -emit-llvm "$src" -o "$ir_in"
-  opt -load-pass-plugin "$PLUGIN_SO" -passes=amd-opt -S "$ir_in" -o "$ir_out"
+  opt -load-pass-plugin "$PLUGIN_SO" -passes=llvm-opt -S "$ir_in" -o "$ir_out"
 done
 
 echo "[4/4] Done. Generated optimized IR files:"

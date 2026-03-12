@@ -43,14 +43,14 @@ static bool optimizeFunction(Function &F, FunctionAnalysisManager &FAM) {
 
             // Fold any instruction whose operands are all constants.
             if (Constant *C = ConstantFoldInstruction(&I, DL)) {
-                errs() << "AMD Optimizer: Folded instruction: " << I << "\n";
+                errs() << "LLVM Optimizer: Folded instruction: " << I << "\n";
                 I.replaceAllUsesWith(C);
                 I.eraseFromParent();
                 changed = true;
             }
             // Dead Code Elimination: remove side-effect-free unused instructions.
             else if (I.use_empty() && !I.isTerminator() && !I.mayHaveSideEffects()) {
-                errs() << "AMD Optimizer: Deleted dead code: " << I << "\n";
+                errs() << "LLVM Optimizer: Deleted dead code: " << I << "\n";
                 I.eraseFromParent();
                 changed = true;
             }
@@ -62,7 +62,7 @@ static bool optimizeFunction(Function &F, FunctionAnalysisManager &FAM) {
 // Module pass so we can strip optnone from every function before the pass
 // manager would otherwise skip them. Clang -O0 marks all functions optnone,
 // which prevents any transformation pass from running.
-struct AMDOptimizerPass : public PassInfoMixin<AMDOptimizerPass> {
+struct LLVMOptimizerPass : public PassInfoMixin<LLVMOptimizerPass> {
     PreservedAnalyses run(Module &M, ModuleAnalysisManager &MAM) {
         bool changed = false;
         auto &FAMProxy = MAM.getResult<FunctionAnalysisManagerModuleProxy>(M);
@@ -88,13 +88,13 @@ struct AMDOptimizerPass : public PassInfoMixin<AMDOptimizerPass> {
 } // namespace
 
 extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo llvmGetPassPluginInfo() {
-    return {LLVM_PLUGIN_API_VERSION, "AMDOptimizer", LLVM_VERSION_STRING,
+    return {LLVM_PLUGIN_API_VERSION, "LLVMOptimizer", LLVM_VERSION_STRING,
             [](PassBuilder &PB) {
                 PB.registerPipelineParsingCallback(
                     [](StringRef Name, ModulePassManager &MPM,
                        ArrayRef<PassBuilder::PipelineElement>) {
-                        if (Name == "amd-opt") {
-                            MPM.addPass(AMDOptimizerPass());
+                        if (Name == "llvm-opt") {
+                            MPM.addPass(LLVMOptimizerPass());
                             return true;
                         }
                         return false;

@@ -5,7 +5,7 @@ cd /home/hemanth/new_project
 
 CLANG=clang-15
 OPT=opt-15
-SO=build/libAMDOptimizer.so
+SO=build/libLLVMOptimizer.so
 
 echo "=== Rebuilding plugin ==="
 cmake -S . -B build -DLLVM_DIR=/usr/lib/llvm-15/cmake 2>&1 | tail -3
@@ -21,7 +21,7 @@ for src in examples/*.c; do
 
     echo "--- $name ---"
     $CLANG -O0 -S -emit-llvm "$src" -o "$ir"
-    $OPT -load-pass-plugin "$SO" -passes=amd-opt -S "$ir" -o "$out" 2>&1
+    $OPT -load-pass-plugin "$SO" -passes=llvm-opt -S "$ir" -o "$out" 2>&1
     echo "  BEFORE: $(grep 'ret i32' $ir)"
     echo "  AFTER:  $(grep 'ret i32' $out)"
     echo ""
